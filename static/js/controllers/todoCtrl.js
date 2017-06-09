@@ -1,7 +1,16 @@
 angular.module('todo')
 	.controller('TodoCtrl', function TodoCtrl($scope) {
 		'use strict';
-		$scope.todoList = [];
+		
+		$scope.getFromLocalStorage = function () {
+			return JSON.parse(localStorage.getItem('todo') || '[]');
+		};
+
+		$scope.saveToLocalStorage = function (todos) {
+			localStorage.setItem('todo', JSON.stringify(todos));
+		};
+
+		$scope.todoList = $scope.getFromLocalStorage();
 		$scope.newTodo = '';
 		$scope.allChecked = false;
 
@@ -13,6 +22,7 @@ angular.module('todo')
 			if (todo.title) {
 				$scope.todoList.push(todo);
 				$scope.newTodo = '';
+				$scope.saveToLocalStorage($scope.todoList);
 			}
 		};
 
@@ -21,6 +31,7 @@ angular.module('todo')
 
 			if (idx > -1) {
 			  $scope.todoList.splice(idx, 1);
+			  $scope.saveToLocalStorage($scope.todoList);
 			}
 		};
 
@@ -31,6 +42,8 @@ angular.module('todo')
 
 			if ($scope.todoList.length == 0)
 				$scope.allChecked = false;
+
+			$scope.saveToLocalStorage($scope.todoList);
 		};
 
 		$scope.markAll = function () {
@@ -38,5 +51,6 @@ angular.module('todo')
 			$scope.todoList.forEach(function (todo) {
 				todo.completed = $scope.allChecked;
 			});
+			$scope.saveToLocalStorage($scope.todoList);
 		};
 	});
